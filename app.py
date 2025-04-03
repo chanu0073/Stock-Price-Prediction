@@ -75,19 +75,18 @@ y = y * scale
 
 st.subheader('Original Price vs Predicted Price')
 
-# Ensure both arrays have the same shape
 min_len = min(len(predict), len(y))
 predict = predict[:min_len]
 y = y[:min_len]
 
 fig4 = plt.figure(figsize=(8,6))
-plt.plot(data.index[-min_len:], predict, 'r', label='Predicted Price')  # Use actual dates on x-axis
+plt.plot(data.index[-min_len:], predict, 'r', label='Predicted Price')  
 plt.plot(data.index[-min_len:], y, 'g', label='Original Price')
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.legend()
 plt.grid(True)
-plt.xticks(rotation=45)  # Rotate dates for better visibility
+plt.xticks(rotation=45)  
 plt.show()
 st.pyplot(fig4)
 
@@ -95,28 +94,24 @@ st.pyplot(fig4)
 future_days = 30
 future_predictions = []
 
-# Get last 100 days of scaled data
-last_100_days = data_test_scale[-100:]  # Corrected variable name
+last_100_days = data_test_scale[-100:]  
 current_input = last_100_days.reshape(1, 100, 1)
 
 for _ in range(future_days):
-    next_price = model.predict(current_input)[0, 0]  # Predict next price
+    next_price = model.predict(current_input)[0, 0]  
     future_predictions.append(next_price)
     
-    # Update input window by adding next_price and removing the first element
     current_input = np.append(current_input[:, 1:, :], [[[next_price]]], axis=1)
 
-# Convert future predictions back to original scale
 future_predictions = np.array(future_predictions).reshape(-1, 1)
 future_predictions = scaler.inverse_transform(future_predictions).flatten()
 
-# Create future dates
 last_date = data.index[-1]
 future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=future_days)
 
-# Plot future predictions
+# Future predictions
 st.subheader('Future Predicted Prices')
-fig5 = plt.figure(figsize=(10,6))  # Set optimal size
+fig5 = plt.figure(figsize=(10,6)) 
 plt.plot(future_dates, future_predictions, 'r', marker='o', linestyle='-', label='Predicted Future Price')
 plt.xlabel('Date')
 plt.ylabel('Price')
